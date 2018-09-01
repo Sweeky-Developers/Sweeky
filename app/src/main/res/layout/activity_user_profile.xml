@@ -17,22 +17,22 @@
         android:id="@+id/star_button"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_gravity="right"
+        android:layout_gravity="top|right"
         android:layout_margin="15dp"
+        android:background="@drawable/rounded_border_background"
         app:icon_size="25dp"
-        app:icon_type="star">
-    </com.like.LikeButton>
+        app:icon_type="star" />
 
     <TextView
         android:id="@+id/userNameTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:background="#bd000000"
+        android:background="#4a21b4"
         android:padding="20dp"
         android:text="User Name"
         android:textAlignment="center"
         android:textColor="#f2f2f2"
-        android:textSize="20dp"
-        android:textStyle="bold" />
+        android:textSize="20sp"
+        android:textStyle="bold"/>
 </FrameLayout>
