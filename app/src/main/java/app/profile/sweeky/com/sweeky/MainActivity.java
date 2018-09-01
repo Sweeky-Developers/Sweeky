@@ -1,13 +1,18 @@
 package app.profile.sweeky.com.sweeky;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Explode;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -52,6 +57,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Enabling activity transition animation for SDK above LOLLIPOP
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+            getWindow().setExitTransition(new Explode());
+        }
+
         setContentView(R.layout.activity_main);
 
 
@@ -107,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        //Getting child of the firebase reference
+        //Getting child list of the firebase reference
         Query query = databaseReference.child("Profiles");
 
         //Creating Adapter
@@ -119,12 +131,38 @@ public class MainActivity extends AppCompatActivity {
                 query
         ) {
             @Override
-            protected void populateViewHolder(ViewHolder viewHolder, Profiles model, int position) {
+            protected void populateViewHolder(ViewHolder viewHolder, final Profiles model, final int position) {
                 viewHolder.frameLayout.setLayoutParams(
                         new FrameLayout.LayoutParams(RECYCLERVIEW_GRID_VIEW_WIDTH, RECYCLERVIEW_GRID_VIEW_WIDTH));
                 viewHolder.userNameTextView.setText(model.getUserName());
                 Picasso.get().load(model.getPhotoUrl()).into(viewHolder.profileImageView);
+
+                //Setting onClickListner for each views
+                viewHolder.frameLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.d(LOG_TAG, "Clicked " + position + " | Name " + model.getUserName());
+
+                        /*Activity Transition Animation
+                        * Only Lollipop and above versions support
+                        * activity transition animation. So we need to check
+                        * the version of device before using animation*/
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
+                            intent.putExtra("userName", model.getUserName());
+                            intent.putExtra("photoUrl", model.getPhotoUrl());
+                            startActivity(intent, ActivityOptions
+                                    .makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                        } else {
+                            //If older version, use normal activity transition
+                            Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
+                            startActivity(intent);
+                        }
+
+                    }
+                });
             }
+
         };
 
         //Setting the adapter to RecyclerView
