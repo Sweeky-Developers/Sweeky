@@ -1,14 +1,13 @@
 package app.profile.sweeky.com.sweeky;
 
-import android.app.ActivityOptions;
-import android.content.Intent;
+import android.app.Activity;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Explode;
+import android.transition.Fade;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -25,21 +24,18 @@ import com.squareup.picasso.Picasso;
 
 import app.profile.sweeky.com.sweeky.Data.Profiles;
 
-/*
-* Welcome to Sweeky Profile App Project
-*
-* Propose of this app is allowing users to create their
-* photo collections as a profile
-*
-*/
-
-public class MainActivity extends AppCompatActivity {
+public class UserProfileGalleryActivity extends Activity {
 
     //Views
-    private RecyclerView userProfileListRecyclerView;
+    private ImageView profilePictureImageView;
+    private TextView userNameTextView;
+    private RecyclerView userPhotosRecyclerView;
+    private FrameLayout frameLayout;
 
     //Variables
     private static String LOG_TAG = "TAG";
+    private String userName;
+    private String photoUrl;
     private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
     private static int RECYCLERVIEW_GRID_VIEW_HEIGHT = 0;
     private static int RECYCLERVIEW_GRID_VIEW_WIDTH = 0;
@@ -51,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     /*DisplayMatrix*/
     private DisplayMetrics displayMetrics;
 
-    //Firebase
+    //Database reference
     private DatabaseReference databaseReference;
 
     @Override
@@ -61,18 +57,17 @@ public class MainActivity extends AppCompatActivity {
         //Enabling activity transition animation for SDK above LOLLIPOP
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
-            getWindow().setExitTransition(new Explode());
+            getWindow().setEnterTransition(new Explode());
         }
 
-        setContentView(R.layout.activity_main);
-
+        setContentView(R.layout.activity_user_profile_gallery);
 
         //[START OF DISPLAY WIDTH CALCULATION]
 
         /*Initializing of DisplayMetrix
-        * DisplayMetrix can be used to get the display height & width
-        * With that height and width we can calculate how much width
-        * we want to give to each views in RecyclerView*/
+         * DisplayMetrix can be used to get the display height & width
+         * With that height and width we can calculate how much width
+         * we want to give to each views in RecyclerView*/
         displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
@@ -87,11 +82,11 @@ public class MainActivity extends AppCompatActivity {
             NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 2;
         } else {
             /*This else part is for resetting number
-            * of columns to show when returning from
-            * large or small screen.
-            * Example: When screen user rotate the device
-            * to land scape and again return back to portrait
-            * this else statement will set value to default*/
+             * of columns to show when returning from
+             * large or small screen.
+             * Example: When screen user rotate the device
+             * to land scape and again return back to portrait
+             * this else statement will set value to default*/
             NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
         }
 
@@ -100,18 +95,29 @@ public class MainActivity extends AppCompatActivity {
 
         //[END OF DISPLAY WIDTH CALCULATION]
 
+        //Initializing views
+        profilePictureImageView = findViewById(R.id.profilePictureImageView);
+        userNameTextView = findViewById(R.id.layoutUserNameTextView);
+        userPhotosRecyclerView = findViewById(R.id.userPhotosRecyclerView);
+
+        //Getting shared data
+        Bundle bundle = getIntent().getExtras();
+        userName = bundle.getString("userName");
+        photoUrl = bundle.getString("photoUrl");
+        Log.d(LOG_TAG, "User name is: " + userName);
+        Log.d(LOG_TAG, "Photo url is: " + photoUrl);
 
 
-        //Initialization of views
-        userProfileListRecyclerView = findViewById(R.id.userProfileListRecyclerView);
-
-        //Initializing Firebase
+        //Initializing firebase database reference
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         //Setting RecyclerView properties
-        userProfileListRecyclerView.setHasFixedSize(true);
-        userProfileListRecyclerView.setLayoutManager(new GridLayoutManager(
-                this, NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW));
+        userPhotosRecyclerView.setHasFixedSize(true);
+        userPhotosRecyclerView.setLayoutManager(new GridLayoutManager(this, NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW));
+
+        //Setting username and profile photo
+        userNameTextView.setText(userName);
+        Picasso.get().load(photoUrl).into(profilePictureImageView);
 
     }
 
@@ -119,11 +125,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        //TODO: The query is loading sample data for testing [NEED TO CHANGE FOR PARTICULAR USERS]
         //Getting child list of the firebase reference
-        Query query = databaseReference.child("Profiles");
+        Query query = databaseReference.child("Images").child("gallery_samples");
+        Log.d(LOG_TAG, "Query is: " + query);
 
         //Creating Adapter
-        FirebaseRecyclerAdapter<Profiles, MainActivity.ViewHolder> adapter;
+        FirebaseRecyclerAdapter<Profiles, UserProfileGalleryActivity.ViewHolder> adapter;
         adapter = new FirebaseRecyclerAdapter<Profiles, ViewHolder>(
                 Profiles.class,
                 R.layout.layout_profile_view,
@@ -131,59 +139,31 @@ public class MainActivity extends AppCompatActivity {
                 query
         ) {
             @Override
-            protected void populateViewHolder(ViewHolder viewHolder, final Profiles model, final int position) {
+            protected void populateViewHolder(ViewHolder viewHolder, Profiles model, int position) {
                 viewHolder.frameLayout.setLayoutParams(
                         new FrameLayout.LayoutParams(RECYCLERVIEW_GRID_VIEW_WIDTH, RECYCLERVIEW_GRID_VIEW_WIDTH));
-                viewHolder.userNameTextView.setText(model.getUserName());
-                Picasso.get().load(model.getPhotoUrl()).into(viewHolder.profileImageView);
-
-                //Setting onClickListner for each views
-                viewHolder.frameLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Log.d(LOG_TAG, "Clicked " + position + " | Name " + model.getUserName());
-
-                        /*Activity Transition Animation
-                        * Only Lollipop and above versions support
-                        * activity transition animation. So we need to check
-                        * the version of device before using animation*/
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
-                            intent.putExtra("userName", model.getUserName());
-                            intent.putExtra("photoUrl", model.getPhotoUrl());
-                            startActivity(intent, ActivityOptions
-                                    .makeSceneTransitionAnimation(MainActivity.this).toBundle());
-                        } else {
-                            //If older version, use normal activity transition
-                            Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
-                            startActivity(intent);
-                        }
-
-                    }
-                });
+                Picasso.get().load(model.getPhotoUrl()).into(viewHolder.photosImageViewVH);
             }
-
         };
 
         //Setting the adapter to RecyclerView
-        userProfileListRecyclerView.setAdapter(adapter);
+        userPhotosRecyclerView.setAdapter(adapter);
 
     }
-
 
     //ViewHolder class for firebase RecyclerView adapter
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         FrameLayout frameLayout;
-        TextView userNameTextView;
-        ImageView profileImageView;
+        ImageView photosImageViewVH;
+        TextView userNameTextViewVH;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
+            photosImageViewVH = itemView.findViewById(R.id.profileImageView);
+            userNameTextViewVH = itemView.findViewById(R.id.layoutUserNameTextView);
             frameLayout = itemView.findViewById(R.id.frameLayout);
-            userNameTextView = itemView.findViewById(R.id.layoutUserNameTextView);
-            profileImageView = itemView.findViewById(R.id.profileImageView);
+            userNameTextViewVH.setVisibility(View.GONE);
         }
     }
 }
