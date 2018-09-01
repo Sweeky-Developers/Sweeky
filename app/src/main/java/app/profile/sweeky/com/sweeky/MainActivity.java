@@ -24,6 +24,7 @@ import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import app.profile.sweeky.com.sweeky.Data.Profiles;
+import app.profile.sweeky.com.sweeky.Util.DisplayUtilities;
 
 /*
 * Welcome to Sweeky Profile App Project
@@ -48,7 +49,10 @@ public class MainActivity extends AppCompatActivity {
     private static int NUMBER_OF_PROFILES_TO_SHOW = 10;
     private int displayWidth = 0;
 
-    /*DisplayMatrix*/
+    /*Display Utilities*/
+    private DisplayUtilities utilities;
+
+    //Display Matrix
     private DisplayMetrics displayMetrics;
 
     //Firebase
@@ -67,40 +71,45 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        //[START OF DISPLAY WIDTH CALCULATION]
+//        //[START OF DISPLAY WIDTH CALCULATION]
+//
+//        /*Initializing of DisplayMetrix
+//        * DisplayMetrix can be used to get the display height & width
+//        * With that height and width we can calculate how much width
+//        * we want to give to each views in RecyclerView*/
+//        displayMetrics = new DisplayMetrics();
+//        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//
+//        //Assigning height to variable
+//        displayWidth = displayMetrics.widthPixels;
+//        Log.d(LOG_TAG, "Display width is " + displayWidth);
+//
+//        //Checking display width and deciding number of columns to show in RecyclerView
+//        if (displayWidth>=LARGE_DISPLAY_WIDTH) {
+//            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 4;
+//        } else if (displayWidth<=SMALL_DISPLAY_WIDTH) {
+//            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 2;
+//        } else {
+//            /*This else part is for resetting number
+//            * of columns to show when returning from
+//            * large or small screen.
+//            * Example: When screen user rotate the device
+//            * to land scape and again return back to portrait
+//            * this else statement will set value to default*/
+//            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
+//        }
+//
+//        //Calculating
+//        RECYCLERVIEW_GRID_VIEW_WIDTH = displayWidth/NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW;
+//
+//        //[END OF DISPLAY WIDTH CALCULATION]
 
-        /*Initializing of DisplayMetrix
-        * DisplayMetrix can be used to get the display height & width
-        * With that height and width we can calculate how much width
-        * we want to give to each views in RecyclerView*/
-        displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
-        //Assigning height to variable
-        displayWidth = displayMetrics.widthPixels;
-        Log.d(LOG_TAG, "Display width is " + displayWidth);
-
-        //Checking display width and deciding number of columns to show in RecyclerView
-        if (displayWidth>=LARGE_DISPLAY_WIDTH) {
-            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 4;
-        } else if (displayWidth<=SMALL_DISPLAY_WIDTH) {
-            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 2;
-        } else {
-            /*This else part is for resetting number
-            * of columns to show when returning from
-            * large or small screen.
-            * Example: When screen user rotate the device
-            * to land scape and again return back to portrait
-            * this else statement will set value to default*/
-            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
-        }
-
-        //Calculating
-        RECYCLERVIEW_GRID_VIEW_WIDTH = displayWidth/NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW;
-
-        //[END OF DISPLAY WIDTH CALCULATION]
-
-
+        //TODO: Shifting display calculations to seperate class process
+        utilities = new DisplayUtilities();
+        RECYCLERVIEW_GRID_VIEW_WIDTH = utilities.recyclerViewColumnWidthDecider();
+        utilities.recalculateRecyclerViewSize();
+        RECYCLERVIEW_GRID_VIEW_WIDTH = utilities.recyclerViewColumnWidthDecider();
+        Log.d(LOG_TAG, "WIDTH IS: " + RECYCLERVIEW_GRID_VIEW_WIDTH);
 
         //Initialization of views
         userProfileListRecyclerView = findViewById(R.id.userProfileListRecyclerView);
