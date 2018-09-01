@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
     private static int RECYCLERVIEW_GRID_VIEW_HEIGHT = 0;
     private static int RECYCLERVIEW_GRID_VIEW_WIDTH = 0;
+    private static int LARGE_DISPLAY_WIDTH = 1500;
+    private static int SMALL_DISPLAY_WIDTH = 800;
     private static int NUMBER_OF_PROFILES_TO_SHOW = 10;
     private int displayWidth = 0;
 
@@ -66,9 +68,19 @@ public class MainActivity extends AppCompatActivity {
         displayWidth = displayMetrics.widthPixels;
         Log.d(LOG_TAG, "Display width is " + displayWidth);
 
-        //If display width is larger increasing number of columns to 4
-        if (displayWidth>2000) {
+        //Checking display width and deciding number of columns to show in RecyclerView
+        if (displayWidth>=LARGE_DISPLAY_WIDTH) {
             NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 4;
+        } else if (displayWidth<=SMALL_DISPLAY_WIDTH) {
+            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 2;
+        } else {
+            /*This else part is for resetting number
+            * of columns to show when returning from
+            * large or small screen.
+            * Example: When screen user rotate the device
+            * to land scape and again return back to portrait
+            * this else statement will set value to default*/
+            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
         }
 
         //Calculating
