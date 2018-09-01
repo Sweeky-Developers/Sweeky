@@ -27,15 +27,16 @@
             android:text="@string/star"
             android:textSize="25sp"
             android:layout_gravity="center_vertical"
-            android:layout_margin="5dp"/>
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp" />
 
         <com.like.LikeButton
             android:id="@+id/star_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:padding="5dp"
             app:icon_size="25dp"
-            app:icon_type="star">
+            app:icon_type="star"
+            android:layout_gravity="center_vertical">
         </com.like.LikeButton>
 
 
@@ -52,5 +53,5 @@
         android:textAlignment="center"
         android:textColor="#f2f2f2"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 </FrameLayout>
