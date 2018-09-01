@@ -13,15 +13,33 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
-    <com.like.LikeButton
-        android:id="@+id/star_button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="right"
-        android:layout_margin="15dp"
-        app:icon_size="25dp"
-        app:icon_type="star">
-    </com.like.LikeButton>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/rounded_border_background"
+        android:layout_gravity="end"
+        android:layout_margin="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/star"
+            android:textSize="25sp"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="5dp"/>
+
+        <com.like.LikeButton
+            android:id="@+id/star_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="5dp"
+            app:icon_size="25dp"
+            app:icon_type="star">
+        </com.like.LikeButton>
+
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/userNameTextView"
@@ -33,6 +51,6 @@
         android:text="User Name"
         android:textAlignment="center"
         android:textColor="#f2f2f2"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold" />
 </FrameLayout>
