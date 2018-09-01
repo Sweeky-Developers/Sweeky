@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Explode;
-import android.transition.Fade;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +22,7 @@ import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import app.profile.sweeky.com.sweeky.Data.Profiles;
+import app.profile.sweeky.com.sweeky.Util.DisplayUtilities;
 
 public class UserProfileGalleryActivity extends Activity {
 
@@ -37,15 +37,13 @@ public class UserProfileGalleryActivity extends Activity {
     private String userName;
     private String photoUrl;
     private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
-    private static int RECYCLERVIEW_GRID_VIEW_HEIGHT = 0;
-    private static int RECYCLERVIEW_GRID_VIEW_WIDTH = 0;
-    private static int LARGE_DISPLAY_WIDTH = 1500;
-    private static int SMALL_DISPLAY_WIDTH = 800;
-    private static int NUMBER_OF_PROFILES_TO_SHOW = 10;
-    private int displayWidth = 0;
+    private static int RECYCLERVIEW_GRID_VIEW_SIZE = 0;
 
     /*DisplayMatrix*/
     private DisplayMetrics displayMetrics;
+
+    //Display Utilities Class
+    private DisplayUtilities displayUtilities;
 
     //Database reference
     private DatabaseReference databaseReference;
@@ -62,38 +60,11 @@ public class UserProfileGalleryActivity extends Activity {
 
         setContentView(R.layout.activity_user_profile_gallery);
 
-        //[START OF DISPLAY WIDTH CALCULATION]
-
-        /*Initializing of DisplayMetrix
-         * DisplayMetrix can be used to get the display height & width
-         * With that height and width we can calculate how much width
-         * we want to give to each views in RecyclerView*/
-        displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
-        //Assigning height to variable
-        displayWidth = displayMetrics.widthPixels;
-        Log.d(LOG_TAG, "Display width is " + displayWidth);
-
         //Checking display width and deciding number of columns to show in RecyclerView
-        if (displayWidth>=LARGE_DISPLAY_WIDTH) {
-            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 4;
-        } else if (displayWidth<=SMALL_DISPLAY_WIDTH) {
-            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 2;
-        } else {
-            /*This else part is for resetting number
-             * of columns to show when returning from
-             * large or small screen.
-             * Example: When screen user rotate the device
-             * to land scape and again return back to portrait
-             * this else statement will set value to default*/
-            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
-        }
-
-        //Calculating
-        RECYCLERVIEW_GRID_VIEW_WIDTH = displayWidth/NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW;
-
-        //[END OF DISPLAY WIDTH CALCULATION]
+        displayUtilities = new DisplayUtilities();
+        RECYCLERVIEW_GRID_VIEW_SIZE = displayUtilities.recyclerViewColumnWidthDecider();
+        NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = displayUtilities
+                .recalculateRecyclerViewSize(displayUtilities.getDisplayWidth());
 
         //Initializing views
         profilePictureImageView = findViewById(R.id.profilePictureImageView);
@@ -102,10 +73,11 @@ public class UserProfileGalleryActivity extends Activity {
 
         //Getting shared data
         Bundle bundle = getIntent().getExtras();
-        userName = bundle.getString("userName");
-        photoUrl = bundle.getString("photoUrl");
-        Log.d(LOG_TAG, "User name is: " + userName);
-        Log.d(LOG_TAG, "Photo url is: " + photoUrl);
+
+        if (bundle != null) {
+            userName = bundle.getString("userName");
+            photoUrl = bundle.getString("photoUrl");
+        }
 
 
         //Initializing firebase database reference
@@ -141,7 +113,7 @@ public class UserProfileGalleryActivity extends Activity {
             @Override
             protected void populateViewHolder(ViewHolder viewHolder, Profiles model, int position) {
                 viewHolder.frameLayout.setLayoutParams(
-                        new FrameLayout.LayoutParams(RECYCLERVIEW_GRID_VIEW_WIDTH, RECYCLERVIEW_GRID_VIEW_WIDTH));
+                        new FrameLayout.LayoutParams(RECYCLERVIEW_GRID_VIEW_SIZE, RECYCLERVIEW_GRID_VIEW_SIZE));
                 Picasso.get().load(model.getPhotoUrl()).into(viewHolder.photosImageViewVH);
             }
         };
