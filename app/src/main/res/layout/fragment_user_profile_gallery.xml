@@ -7,34 +7,38 @@
     android:orientation="vertical"
     tools:context=".UserProfileGalleryActivity">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="180dp"
         android:background="#4a21b4"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/profilePictureImageView"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circularProfilePictureImageView"
             android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="20dp"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/ic_launcher" />
+
 
         <TextView
             android:id="@+id/layoutUserNameTextView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:gravity="center"
             android:text="User Name"
             android:textColor="#f2f2f2"
             android:textSize="24sp"
             android:textStyle="bold" />
-    </LinearLayout>
+    </FrameLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/userPhotosRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="#f2f2f2"/>
 
 </LinearLayout>

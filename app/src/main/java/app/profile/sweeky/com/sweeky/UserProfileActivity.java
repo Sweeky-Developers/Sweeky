@@ -1,13 +1,14 @@
 package app.profile.sweeky.com.sweeky;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.app.ActivityOptions;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.transition.Fade;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -17,13 +18,17 @@ import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.squareup.picasso.Picasso;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class UserProfileActivity extends Activity {
 
     //Views
     private ImageView profilePhotoImageView;
     private ImageView starImageView;
-    private TextView userNameTextView;
+    private TextView fragmentUserNameTextView;
     private LikeButton likeButton;
+    private CoordinatorLayout coordinatorLayout;
+    private CircleImageView circularProfilePictureImageView;
 
     //Variables
     private static String LOG_TAG = "TAG";
@@ -32,6 +37,17 @@ public class UserProfileActivity extends Activity {
 
     //MediaPlayer
     private MediaPlayer mediaPlayer;
+
+    //Object Animator
+    ObjectAnimator objectAnimatorTextView;
+    ObjectAnimator objectAnimatorTextViewReverse;
+    ObjectAnimator objectAnimatorImageView;
+    ObjectAnimator objectAnimatorImageViewReverse;
+
+    //Bundle
+    private Bundle recievData;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,32 +61,48 @@ public class UserProfileActivity extends Activity {
 
         setContentView(R.layout.activity_user_profile);
 
-        //Getting shared values
-        Bundle bundle = getIntent().getExtras();
-        userName = bundle.getString("userName");
-        photoUrl = bundle.getString("photoUrl");
 
-        Log.d(LOG_TAG, "Name: " + userName);
-        Log.d(LOG_TAG, "Photo URL: " + photoUrl);
 
-        //Initialization of views
+        //Initialization views
         profilePhotoImageView = findViewById(R.id.profilePhotoImageView);
-        userNameTextView = findViewById(R.id.userNameTextView);
         likeButton = findViewById(R.id.star_button);
+        fragmentUserNameTextView = findViewById(R.id.layoutUserNameTextView);
+        circularProfilePictureImageView = findViewById(R.id.circularProfilePictureImageView);
 
-        //Setting username to the texView
-        userNameTextView.setText(userName);
+        //Getting shared values
+        recievData = getIntent().getExtras();
+        userName = recievData.getString("userName");
+        photoUrl = recievData.getString("photoUrl");
 
-        //Loading photo to image view
+        //Loading photo to image view of Activity
         Picasso.get().load(photoUrl).into(profilePhotoImageView);
+
+        //Loading user name and photo to fragment
+        Picasso.get().load(photoUrl).into(circularProfilePictureImageView);
+        fragmentUserNameTextView.setText(userName);
 
         //Initializing MediaPlayer
         mediaPlayer = MediaPlayer.create(UserProfileActivity.this, R.raw.sweeky_star);
+        coordinatorLayout = findViewById(R.id.profileContainerCordinatorLayout);
+
+        //Initializing object animators
+        objectAnimatorTextView = ObjectAnimator.ofFloat(fragmentUserNameTextView, "translationY", 340f);
+        objectAnimatorImageView = ObjectAnimator.ofFloat(circularProfilePictureImageView, View.ALPHA, 0, 1);
+        objectAnimatorTextViewReverse = ObjectAnimator.ofFloat(fragmentUserNameTextView, "translationY", 0f);
+        objectAnimatorImageViewReverse = ObjectAnimator.ofFloat(circularProfilePictureImageView, View.ALPHA, 1, 0);
+
+        objectAnimatorTextView.setDuration(200);
+        objectAnimatorImageView.setDuration(1000);
+        objectAnimatorTextViewReverse.setDuration(100);
+        objectAnimatorImageViewReverse.setDuration(1000);
+
+
 
         //Click listener for star button
         likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
+                //Playing sound on click
                 mediaPlayer.start();
             }
 
@@ -80,23 +112,36 @@ public class UserProfileActivity extends Activity {
             }
         });
 
-        //Click listener for textView
-        userNameTextView.setOnClickListener(new View.OnClickListener() {
+        //Bottom sheet behaviour
+        View bottomSheet = coordinatorLayout.findViewById(R.id.fragmentContainerLinearLayout);
+        final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
+        behavior.setPeekHeight(200);
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(UserProfileActivity.this, UserProfileGalleryActivity.class);
-                intent.putExtra("userName", userName);
-                intent.putExtra("photoUrl", photoUrl);
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                // React to state change
 
-                //Checking version of sdk. Activity animation transition is only supported
-                //by os LOLLIPOP and above
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    startActivity(intent, ActivityOptions
-                            .makeSceneTransitionAnimation(UserProfileActivity.this).toBundle());
-                } else {
-                    startActivity(intent);
+                if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    objectAnimatorTextView.start();
+                    circularProfilePictureImageView.setVisibility(View.VISIBLE);
+                    objectAnimatorImageView.start();
                 }
+
+                if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    objectAnimatorImageViewReverse.start();
+                    circularProfilePictureImageView.setVisibility(View.GONE);
+                    objectAnimatorTextViewReverse.start();
+                }
+
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, final float slideOffset) {
+                // React to drag event
+
             }
         });
+
     }
+
 }

@@ -1,16 +1,15 @@
-package app.profile.sweeky.com.sweeky;
+package app.profile.sweeky.com.sweeky.Fragments;
 
-import android.app.Activity;
-import android.os.Build;
-import android.support.annotation.NonNull;
+import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Explode;
-import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,25 +21,24 @@ import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import app.profile.sweeky.com.sweeky.Data.Profiles;
+import app.profile.sweeky.com.sweeky.R;
 import app.profile.sweeky.com.sweeky.Util.DisplayUtilities;
+import de.hdodenhof.circleimageview.CircleImageView;
 
-public class UserProfileGalleryActivity extends Activity {
+public class UserProfileGalleryFragment extends Fragment {
 
     //Views
-    private ImageView profilePictureImageView;
     private TextView userNameTextView;
     private RecyclerView userPhotosRecyclerView;
     private FrameLayout frameLayout;
+    private CircleImageView circularProfilePictureImageView;
 
     //Variables
-    private static String LOG_TAG = "TAG";
+    private static String LOG_TAG = "FRAGLOG";
     private String userName;
     private String photoUrl;
     private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
     private static int RECYCLERVIEW_GRID_VIEW_SIZE = 0;
-
-    /*DisplayMatrix*/
-    private DisplayMetrics displayMetrics;
 
     //Display Utilities Class
     private DisplayUtilities displayUtilities;
@@ -48,17 +46,20 @@ public class UserProfileGalleryActivity extends Activity {
     //Database reference
     private DatabaseReference databaseReference;
 
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
-        //Enabling activity transition animation for SDK above LOLLIPOP
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
-            getWindow().setEnterTransition(new Explode());
-        }
+        Log.d(LOG_TAG, "Inside OnCreateView");
 
-        setContentView(R.layout.activity_user_profile_gallery);
+        // /Inflating view
+        View view = inflater.inflate(R.layout.fragment_user_profile_gallery, container, false);
+
+        //Initializing views
+        userNameTextView = view.findViewById(R.id.layoutUserNameTextView);
+        userPhotosRecyclerView = view.findViewById(R.id.userPhotosRecyclerView);
+        circularProfilePictureImageView = view.findViewById(R.id.circularProfilePictureImageView);
 
         //Checking display width and deciding number of columns to show in RecyclerView
         displayUtilities = new DisplayUtilities();
@@ -66,36 +67,27 @@ public class UserProfileGalleryActivity extends Activity {
         NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = displayUtilities
                 .recalculateRecyclerViewSize(displayUtilities.getDisplayWidth());
 
-        //Initializing views
-        profilePictureImageView = findViewById(R.id.profilePictureImageView);
-        userNameTextView = findViewById(R.id.layoutUserNameTextView);
-        userPhotosRecyclerView = findViewById(R.id.userPhotosRecyclerView);
-
-        //Getting shared data
-        Bundle bundle = getIntent().getExtras();
-
-        if (bundle != null) {
-            userName = bundle.getString("userName");
-            photoUrl = bundle.getString("photoUrl");
-        }
-
-
         //Initializing firebase database reference
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
+        //Setting circularProfilePictureImageView property
+        circularProfilePictureImageView.setVisibility(View.GONE);
+
         //Setting RecyclerView properties
         userPhotosRecyclerView.setHasFixedSize(true);
-        userPhotosRecyclerView.setLayoutManager(new GridLayoutManager(this, NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW));
+        userPhotosRecyclerView.setLayoutManager(
+                new GridLayoutManager(getActivity().getApplicationContext(),
+                        NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW));
 
-        //Setting username and profile photo
-        userNameTextView.setText(userName);
-        Picasso.get().load(photoUrl).into(profilePictureImageView);
-
+        return view;
     }
 
+
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
+
+        Log.d(LOG_TAG, "Inside OnStart");
 
         //TODO: The query is loading sample data for testing [NEED TO CHANGE FOR PARTICULAR USERS]
         //Getting child list of the firebase reference
@@ -103,15 +95,15 @@ public class UserProfileGalleryActivity extends Activity {
         Log.d(LOG_TAG, "Query is: " + query);
 
         //Creating Adapter
-        FirebaseRecyclerAdapter<Profiles, UserProfileGalleryActivity.ViewHolder> adapter;
-        adapter = new FirebaseRecyclerAdapter<Profiles, ViewHolder>(
+        FirebaseRecyclerAdapter<Profiles, UserProfileGalleryFragment.ViewHolder> adapter;
+        adapter = new FirebaseRecyclerAdapter<Profiles, UserProfileGalleryFragment.ViewHolder>(
                 Profiles.class,
                 R.layout.layout_profile_view,
-                ViewHolder.class,
+                UserProfileGalleryFragment.ViewHolder.class,
                 query
         ) {
             @Override
-            protected void populateViewHolder(ViewHolder viewHolder, Profiles model, int position) {
+            protected void populateViewHolder(UserProfileGalleryFragment.ViewHolder viewHolder, Profiles model, int position) {
                 viewHolder.frameLayout.setLayoutParams(
                         new FrameLayout.LayoutParams(RECYCLERVIEW_GRID_VIEW_SIZE, RECYCLERVIEW_GRID_VIEW_SIZE));
                 Picasso.get().load(model.getPhotoUrl()).into(viewHolder.photosImageViewVH);
@@ -138,4 +130,5 @@ public class UserProfileGalleryActivity extends Activity {
             userNameTextViewVH.setVisibility(View.GONE);
         }
     }
+
 }
