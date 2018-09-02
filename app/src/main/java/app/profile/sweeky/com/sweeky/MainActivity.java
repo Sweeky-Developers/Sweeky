@@ -22,6 +22,7 @@ import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import app.profile.sweeky.com.sweeky.Data.Profiles;
+import app.profile.sweeky.com.sweeky.Fragments.UserProfileGalleryFragment;
 import app.profile.sweeky.com.sweeky.Util.DisplayUtilities;
 
 /*
@@ -47,6 +48,12 @@ private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
 
     //Firebase
     private DatabaseReference databaseReference;
+
+    //Bundle
+    private Bundle dataToFragment;
+
+    //Fragment reference
+    private UserProfileGalleryFragment userProfileGalleryFragment;
 
 
     @Override
@@ -116,6 +123,15 @@ private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
                         Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
                         intent.putExtra("userName", model.getUserName());
                         intent.putExtra("photoUrl", model.getPhotoUrl());
+
+                        dataToFragment = new Bundle();
+
+                        dataToFragment.putString("userName", model.getUserName());
+                        dataToFragment.putString("photoUrl", model.getPhotoUrl());
+
+                        userProfileGalleryFragment = new UserProfileGalleryFragment();
+
+                        userProfileGalleryFragment.setArguments(dataToFragment);
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             startActivity(intent, ActivityOptions

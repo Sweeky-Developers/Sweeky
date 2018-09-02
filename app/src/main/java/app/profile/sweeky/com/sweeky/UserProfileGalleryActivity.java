@@ -67,7 +67,7 @@ public class UserProfileGalleryActivity extends Activity {
                 .recalculateRecyclerViewSize(displayUtilities.getDisplayWidth());
 
         //Initializing views
-        profilePictureImageView = findViewById(R.id.profilePictureImageView);
+        profilePictureImageView = findViewById(R.id.circularProfilePictureImageView);
         userNameTextView = findViewById(R.id.layoutUserNameTextView);
         userPhotosRecyclerView = findViewById(R.id.userPhotosRecyclerView);
 

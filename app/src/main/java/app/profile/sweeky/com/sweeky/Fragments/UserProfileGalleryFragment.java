@@ -24,17 +24,18 @@ import app.profile.sweeky.com.sweeky.Data.Profiles;
 import app.profile.sweeky.com.sweeky.R;
 import app.profile.sweeky.com.sweeky.UserProfileGalleryActivity;
 import app.profile.sweeky.com.sweeky.Util.DisplayUtilities;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserProfileGalleryFragment extends Fragment {
 
     //Views
     private TextView userNameTextView;
-    private ImageView profilePictureImageView;
     private RecyclerView userPhotosRecyclerView;
     private FrameLayout frameLayout;
+    private CircleImageView circularProfilePictureImageView;
 
     //Variables
-    private static String LOG_TAG = "TAG";
+    private static String LOG_TAG = "FRAGLOG";
     private String userName;
     private String photoUrl;
     private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
@@ -51,13 +52,15 @@ public class UserProfileGalleryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
+        Log.d(LOG_TAG, "Inside OnCreateView");
+
         // /Inflating view
         View view = inflater.inflate(R.layout.activity_user_profile_gallery, container, false);
 
         //Initializing views
         userNameTextView = view.findViewById(R.id.layoutUserNameTextView);
-        profilePictureImageView = view.findViewById(R.id.profilePictureImageView);
         userPhotosRecyclerView = view.findViewById(R.id.userPhotosRecyclerView);
+        circularProfilePictureImageView = view.findViewById(R.id.circularProfilePictureImageView);
 
         //Checking display width and deciding number of columns to show in RecyclerView
         displayUtilities = new DisplayUtilities();
@@ -67,6 +70,9 @@ public class UserProfileGalleryFragment extends Fragment {
 
         //Initializing firebase database reference
         databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        //Setting circularProfilePictureImageView property
+        circularProfilePictureImageView.setVisibility(View.GONE);
 
         //Setting RecyclerView properties
         userPhotosRecyclerView.setHasFixedSize(true);
@@ -81,6 +87,8 @@ public class UserProfileGalleryFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        Log.d(LOG_TAG, "Inside OnStart");
 
         //TODO: The query is loading sample data for testing [NEED TO CHANGE FOR PARTICULAR USERS]
         //Getting child list of the firebase reference
@@ -107,7 +115,6 @@ public class UserProfileGalleryFragment extends Fragment {
         userPhotosRecyclerView.setAdapter(adapter);
 
     }
-
 
     //ViewHolder class for firebase RecyclerView adapter
     public static class ViewHolder extends RecyclerView.ViewHolder {
