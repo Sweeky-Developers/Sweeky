@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context=".UserProfileGalleryActivity">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:background="#4a21b4"
@@ -18,23 +18,25 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
+            android:visibility="gone"
             app:srcCompat="@drawable/ic_launcher" />
+
 
         <TextView
             android:id="@+id/layoutUserNameTextView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="User Name"
             android:textColor="#f2f2f2"
             android:textSize="24sp"
             android:textStyle="bold" />
-    </LinearLayout>
+    </FrameLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/userPhotosRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="#f2f2f2"/>
 
 </LinearLayout>

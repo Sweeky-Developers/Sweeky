@@ -1,15 +1,13 @@
 package app.profile.sweeky.com.sweeky;
 
 import android.app.Activity;
-import android.app.ActivityOptions;
-import android.content.Intent;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
-import android.transition.Fade;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,6 +22,7 @@ public class UserProfileActivity extends Activity {
     private ImageView starImageView;
     private TextView userNameTextView;
     private LikeButton likeButton;
+    private CoordinatorLayout coordinatorLayout;
 
     //Variables
     private static String LOG_TAG = "TAG";
@@ -38,10 +37,10 @@ public class UserProfileActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         //Enabling activity transition animation for SDK above LOLLIPOP
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
-            getWindow().setEnterTransition(new Fade());
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+//            getWindow().setEnterTransition(new Fade());
+//        }
 
         setContentView(R.layout.activity_user_profile);
 
@@ -55,17 +54,18 @@ public class UserProfileActivity extends Activity {
 
         //Initialization of views
         profilePhotoImageView = findViewById(R.id.profilePhotoImageView);
-        userNameTextView = findViewById(R.id.userNameTextView);
+//        userNameTextView = findViewById(R.id.userNameTextView);
         likeButton = findViewById(R.id.star_button);
 
         //Setting username to the texView
-        userNameTextView.setText(userName);
+//        userNameTextView.setText(userName);
 
         //Loading photo to image view
         Picasso.get().load(photoUrl).into(profilePhotoImageView);
 
         //Initializing MediaPlayer
         mediaPlayer = MediaPlayer.create(UserProfileActivity.this, R.raw.sweeky_star);
+        coordinatorLayout = findViewById(R.id.profileContainerCordinatorLayout);
 
         //Click listener for star button
         likeButton.setOnLikeListener(new OnLikeListener() {
@@ -80,23 +80,23 @@ public class UserProfileActivity extends Activity {
             }
         });
 
-        //Click listener for textView
-        userNameTextView.setOnClickListener(new View.OnClickListener() {
+        //Bottom sheet behaviour
+        View bottomSheet = coordinatorLayout.findViewById(R.id.fragmentContainerLinearLayout);
+        final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
+        behavior.setPeekHeight(200);
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(UserProfileActivity.this, UserProfileGalleryActivity.class);
-                intent.putExtra("userName", userName);
-                intent.putExtra("photoUrl", photoUrl);
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                // React to state change
 
-                //Checking version of sdk. Activity animation transition is only supported
-                //by os LOLLIPOP and above
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    startActivity(intent, ActivityOptions
-                            .makeSceneTransitionAnimation(UserProfileActivity.this).toBundle());
-                } else {
-                    startActivity(intent);
-                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, final float slideOffset) {
+                // React to drag event
+
             }
         });
+
     }
 }

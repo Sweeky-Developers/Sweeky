@@ -9,8 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Explode;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
@@ -41,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Variables
     private static String LOG_TAG = "TAG";
-    private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
+private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
     private static int RECYCLERVIEW_GRID_VIEW_SIZE = 0;
 
     //Display utility class
@@ -109,21 +107,21 @@ public class MainActivity extends AppCompatActivity {
                 viewHolder.frameLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.d(LOG_TAG, "Clicked " + position + " | Name " + model.getUserName());
 
                         /*Activity Transition Animation
                         * Only Lollipop and above versions support
                         * activity transition animation. So we need to check
                         * the version of device before using animation*/
+
+                        Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
+                        intent.putExtra("userName", model.getUserName());
+                        intent.putExtra("photoUrl", model.getPhotoUrl());
+
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
-                            intent.putExtra("userName", model.getUserName());
-                            intent.putExtra("photoUrl", model.getPhotoUrl());
                             startActivity(intent, ActivityOptions
                                     .makeSceneTransitionAnimation(MainActivity.this).toBundle());
                         } else {
                             //If older version, use normal activity transition
-                            Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
                             startActivity(intent);
                         }
 
