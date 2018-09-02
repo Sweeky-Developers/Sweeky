@@ -24,6 +24,7 @@ import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import app.profile.sweeky.com.sweeky.Data.Profiles;
+import app.profile.sweeky.com.sweeky.Util.DisplayUtilities;
 
 /*
 * Welcome to Sweeky Profile App Project
@@ -41,18 +42,14 @@ public class MainActivity extends AppCompatActivity {
     //Variables
     private static String LOG_TAG = "TAG";
     private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
-    private static int RECYCLERVIEW_GRID_VIEW_HEIGHT = 0;
-    private static int RECYCLERVIEW_GRID_VIEW_WIDTH = 0;
-    private static int LARGE_DISPLAY_WIDTH = 1500;
-    private static int SMALL_DISPLAY_WIDTH = 800;
-    private static int NUMBER_OF_PROFILES_TO_SHOW = 10;
-    private int displayWidth = 0;
+    private static int RECYCLERVIEW_GRID_VIEW_SIZE = 0;
 
-    /*DisplayMatrix*/
-    private DisplayMetrics displayMetrics;
+    //Display utility class
+    private DisplayUtilities utilities;
 
     //Firebase
     private DatabaseReference databaseReference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,43 +60,14 @@ public class MainActivity extends AppCompatActivity {
             getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
             getWindow().setExitTransition(new Explode());
         }
-
         setContentView(R.layout.activity_main);
 
 
-        //[START OF DISPLAY WIDTH CALCULATION]
-
-        /*Initializing of DisplayMetrix
-        * DisplayMetrix can be used to get the display height & width
-        * With that height and width we can calculate how much width
-        * we want to give to each views in RecyclerView*/
-        displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
-        //Assigning height to variable
-        displayWidth = displayMetrics.widthPixels;
-        Log.d(LOG_TAG, "Display width is " + displayWidth);
-
         //Checking display width and deciding number of columns to show in RecyclerView
-        if (displayWidth>=LARGE_DISPLAY_WIDTH) {
-            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 4;
-        } else if (displayWidth<=SMALL_DISPLAY_WIDTH) {
-            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 2;
-        } else {
-            /*This else part is for resetting number
-            * of columns to show when returning from
-            * large or small screen.
-            * Example: When screen user rotate the device
-            * to land scape and again return back to portrait
-            * this else statement will set value to default*/
-            NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
-        }
+        utilities = new DisplayUtilities();
 
-        //Calculating
-        RECYCLERVIEW_GRID_VIEW_WIDTH = displayWidth/NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW;
-
-        //[END OF DISPLAY WIDTH CALCULATION]
-
+        RECYCLERVIEW_GRID_VIEW_SIZE = utilities.recyclerViewColumnWidthDecider();
+        NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = utilities.recalculateRecyclerViewSize(utilities.getDisplayWidth());
 
 
         //Initialization of views
@@ -133,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void populateViewHolder(ViewHolder viewHolder, final Profiles model, final int position) {
                 viewHolder.frameLayout.setLayoutParams(
-                        new FrameLayout.LayoutParams(RECYCLERVIEW_GRID_VIEW_WIDTH, RECYCLERVIEW_GRID_VIEW_WIDTH));
+                        new FrameLayout.LayoutParams(RECYCLERVIEW_GRID_VIEW_SIZE, RECYCLERVIEW_GRID_VIEW_SIZE));
                 viewHolder.userNameTextView.setText(model.getUserName());
                 Picasso.get().load(model.getPhotoUrl()).into(viewHolder.profileImageView);
 
@@ -182,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
             super(itemView);
 
             frameLayout = itemView.findViewById(R.id.frameLayout);
-            userNameTextView = itemView.findViewById(R.id.userNameTextView);
+            userNameTextView = itemView.findViewById(R.id.layoutUserNameTextView);
             profileImageView = itemView.findViewById(R.id.profileImageView);
         }
     }

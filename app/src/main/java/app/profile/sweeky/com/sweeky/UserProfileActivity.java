@@ -1,11 +1,14 @@
 package app.profile.sweeky.com.sweeky;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.transition.Fade;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -64,7 +67,7 @@ public class UserProfileActivity extends Activity {
         //Initializing MediaPlayer
         mediaPlayer = MediaPlayer.create(UserProfileActivity.this, R.raw.sweeky_star);
 
-        //Click listner for star button
+        //Click listener for star button
         likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
@@ -77,5 +80,23 @@ public class UserProfileActivity extends Activity {
             }
         });
 
+        //Click listener for textView
+        userNameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UserProfileActivity.this, UserProfileGalleryActivity.class);
+                intent.putExtra("userName", userName);
+                intent.putExtra("photoUrl", photoUrl);
+
+                //Checking version of sdk. Activity animation transition is only supported
+                //by os LOLLIPOP and above
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    startActivity(intent, ActivityOptions
+                            .makeSceneTransitionAnimation(UserProfileActivity.this).toBundle());
+                } else {
+                    startActivity(intent);
+                }
+            }
+        });
     }
 }
