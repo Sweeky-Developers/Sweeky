@@ -22,7 +22,6 @@ import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import app.profile.sweeky.com.sweeky.Data.Profiles;
-import app.profile.sweeky.com.sweeky.Fragments.UserProfileGalleryFragment;
 import app.profile.sweeky.com.sweeky.Util.DisplayUtilities;
 
 /*
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Variables
     private static String LOG_TAG = "TAG";
-private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
+    private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
     private static int RECYCLERVIEW_GRID_VIEW_SIZE = 0;
 
     //Display utility class
@@ -48,12 +47,6 @@ private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
 
     //Firebase
     private DatabaseReference databaseReference;
-
-    //Bundle
-    private Bundle dataToFragment;
-
-    //Fragment reference
-    private UserProfileGalleryFragment userProfileGalleryFragment;
 
 
     @Override
@@ -124,15 +117,6 @@ private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
                         intent.putExtra("userName", model.getUserName());
                         intent.putExtra("photoUrl", model.getPhotoUrl());
 
-                        dataToFragment = new Bundle();
-
-                        dataToFragment.putString("userName", model.getUserName());
-                        dataToFragment.putString("photoUrl", model.getPhotoUrl());
-
-                        userProfileGalleryFragment = new UserProfileGalleryFragment();
-
-                        userProfileGalleryFragment.setArguments(dataToFragment);
-
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             startActivity(intent, ActivityOptions
                                     .makeSceneTransitionAnimation(MainActivity.this).toBundle());
@@ -152,7 +136,6 @@ private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
 
     }
 
-
     //ViewHolder class for firebase RecyclerView adapter
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -168,4 +151,5 @@ private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
             profileImageView = itemView.findViewById(R.id.profileImageView);
         }
     }
+
 }

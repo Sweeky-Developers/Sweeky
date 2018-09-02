@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.transition.Fade;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -27,7 +26,6 @@ public class UserProfileActivity extends Activity {
     private ImageView profilePhotoImageView;
     private ImageView starImageView;
     private TextView fragmentUserNameTextView;
-    private TextView layoutUserNameTextView;
     private LikeButton likeButton;
     private CoordinatorLayout coordinatorLayout;
     private CircleImageView circularProfilePictureImageView;
@@ -63,21 +61,29 @@ public class UserProfileActivity extends Activity {
 
         setContentView(R.layout.activity_user_profile);
 
-        Log.d("FRAGLOG", "Inside OnCreate of Activity");
+
+
+        //Initialization views
+        profilePhotoImageView = findViewById(R.id.profilePhotoImageView);
+        likeButton = findViewById(R.id.star_button);
+        fragmentUserNameTextView = findViewById(R.id.layoutUserNameTextView);
+        circularProfilePictureImageView = findViewById(R.id.circularProfilePictureImageView);
 
         //Getting shared values
         recievData = getIntent().getExtras();
         userName = recievData.getString("userName");
         photoUrl = recievData.getString("photoUrl");
 
-        Log.d(LOG_TAG, "Name: " + userName);
-        Log.d(LOG_TAG, "Photo URL: " + photoUrl);
+        //Loading photo to image view of Activity
+        Picasso.get().load(photoUrl).into(profilePhotoImageView);
 
-        //Initialization of views
-        profilePhotoImageView = findViewById(R.id.profilePhotoImageView);
-        likeButton = findViewById(R.id.star_button);
-        fragmentUserNameTextView = findViewById(R.id.layoutUserNameTextView);
-        circularProfilePictureImageView = findViewById(R.id.circularProfilePictureImageView);
+        //Loading user name and photo to fragment
+        Picasso.get().load(photoUrl).into(circularProfilePictureImageView);
+        fragmentUserNameTextView.setText(userName);
+
+        //Initializing MediaPlayer
+        mediaPlayer = MediaPlayer.create(UserProfileActivity.this, R.raw.sweeky_star);
+        coordinatorLayout = findViewById(R.id.profileContainerCordinatorLayout);
 
         //Initializing object animators
         objectAnimatorTextView = ObjectAnimator.ofFloat(fragmentUserNameTextView, "translationY", 340f);
@@ -90,21 +96,13 @@ public class UserProfileActivity extends Activity {
         objectAnimatorTextViewReverse.setDuration(100);
         objectAnimatorImageViewReverse.setDuration(1000);
 
-        //Loading photo to image view
-        Picasso.get().load(photoUrl).into(profilePhotoImageView);
 
-        //Loading user name and photo to fragment
-        Picasso.get().load(photoUrl).into(circularProfilePictureImageView);
-        fragmentUserNameTextView.setText(userName);
-
-        //Initializing MediaPlayer
-        mediaPlayer = MediaPlayer.create(UserProfileActivity.this, R.raw.sweeky_star);
-        coordinatorLayout = findViewById(R.id.profileContainerCordinatorLayout);
 
         //Click listener for star button
         likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
+                //Playing sound on click
                 mediaPlayer.start();
             }
 
@@ -146,9 +144,4 @@ public class UserProfileActivity extends Activity {
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d("FRAGLOG", "Inside onStart of Activity");
-    }
 }

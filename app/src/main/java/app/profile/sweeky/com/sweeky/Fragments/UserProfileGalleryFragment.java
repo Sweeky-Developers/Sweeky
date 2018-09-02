@@ -22,7 +22,6 @@ import com.squareup.picasso.Picasso;
 
 import app.profile.sweeky.com.sweeky.Data.Profiles;
 import app.profile.sweeky.com.sweeky.R;
-import app.profile.sweeky.com.sweeky.UserProfileGalleryActivity;
 import app.profile.sweeky.com.sweeky.Util.DisplayUtilities;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -55,7 +54,7 @@ public class UserProfileGalleryFragment extends Fragment {
         Log.d(LOG_TAG, "Inside OnCreateView");
 
         // /Inflating view
-        View view = inflater.inflate(R.layout.activity_user_profile_gallery, container, false);
+        View view = inflater.inflate(R.layout.fragment_user_profile_gallery, container, false);
 
         //Initializing views
         userNameTextView = view.findViewById(R.id.layoutUserNameTextView);
@@ -96,15 +95,15 @@ public class UserProfileGalleryFragment extends Fragment {
         Log.d(LOG_TAG, "Query is: " + query);
 
         //Creating Adapter
-        FirebaseRecyclerAdapter<Profiles, UserProfileGalleryActivity.ViewHolder> adapter;
-        adapter = new FirebaseRecyclerAdapter<Profiles, UserProfileGalleryActivity.ViewHolder>(
+        FirebaseRecyclerAdapter<Profiles, UserProfileGalleryFragment.ViewHolder> adapter;
+        adapter = new FirebaseRecyclerAdapter<Profiles, UserProfileGalleryFragment.ViewHolder>(
                 Profiles.class,
                 R.layout.layout_profile_view,
-                UserProfileGalleryActivity.ViewHolder.class,
+                UserProfileGalleryFragment.ViewHolder.class,
                 query
         ) {
             @Override
-            protected void populateViewHolder(UserProfileGalleryActivity.ViewHolder viewHolder, Profiles model, int position) {
+            protected void populateViewHolder(UserProfileGalleryFragment.ViewHolder viewHolder, Profiles model, int position) {
                 viewHolder.frameLayout.setLayoutParams(
                         new FrameLayout.LayoutParams(RECYCLERVIEW_GRID_VIEW_SIZE, RECYCLERVIEW_GRID_VIEW_SIZE));
                 Picasso.get().load(model.getPhotoUrl()).into(viewHolder.photosImageViewVH);
