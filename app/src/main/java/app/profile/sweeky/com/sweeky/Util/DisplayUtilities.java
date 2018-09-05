@@ -23,7 +23,7 @@ public class DisplayUtilities {
     //Constructors
     public DisplayUtilities() {}
 
-    private DisplayMetrics getDisplayMetrics() {
+    public DisplayMetrics getDisplayMetrics() {
         return Resources.getSystem().getDisplayMetrics();
     }
 
@@ -71,6 +71,11 @@ public class DisplayUtilities {
             return NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
         }
 
+    }
+
+    public int convertDpToPixel(int px) {
+        float logicalDensity = getDisplayMetrics().density;
+        return  (int) Math.ceil(px * logicalDensity);
     }
 
 }
