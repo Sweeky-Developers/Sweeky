@@ -9,8 +9,10 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.transition.Fade;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,6 +20,7 @@ import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.squareup.picasso.Picasso;
 
+import app.profile.sweeky.com.sweeky.Util.DisplayUtilities;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserProfileActivity extends Activity {
@@ -29,11 +32,14 @@ public class UserProfileActivity extends Activity {
     private LikeButton likeButton;
     private CoordinatorLayout coordinatorLayout;
     private CircleImageView circularProfilePictureImageView;
+    private FrameLayout frameLayout;
+    private CoordinatorLayout profileContainerCordinatorLayout;
 
     //Variables
     private static String LOG_TAG = "TAG";
     private String userName;
     private String photoUrl;
+    private int PEAK_HEIGHT = 62;
 
     //MediaPlayer
     private MediaPlayer mediaPlayer;
@@ -47,6 +53,11 @@ public class UserProfileActivity extends Activity {
     //Bundle
     private Bundle recievData;
 
+    //Display Utility
+    DisplayUtilities displayUtilities;
+
+    //Log
+    private static final String TAG = "UserProfileActivity";
 
 
     @Override
@@ -68,6 +79,8 @@ public class UserProfileActivity extends Activity {
         likeButton = findViewById(R.id.star_button);
         fragmentUserNameTextView = findViewById(R.id.layoutUserNameTextView);
         circularProfilePictureImageView = findViewById(R.id.circularProfilePictureImageView);
+        frameLayout = findViewById(R.id.containerFrameLayout);
+        profileContainerCordinatorLayout = findViewById(R.id.profileContainerCordinatorLayout);
 
         //Getting shared values
         recievData = getIntent().getExtras();
@@ -85,8 +98,11 @@ public class UserProfileActivity extends Activity {
         mediaPlayer = MediaPlayer.create(UserProfileActivity.this, R.raw.sweeky_star);
         coordinatorLayout = findViewById(R.id.profileContainerCordinatorLayout);
 
+        //Initializing Display utility
+        displayUtilities = new DisplayUtilities();
+
         //Initializing object animators
-        objectAnimatorTextView = ObjectAnimator.ofFloat(fragmentUserNameTextView, "translationY", 340f);
+        objectAnimatorTextView = ObjectAnimator.ofFloat(fragmentUserNameTextView, "translationY", displayUtilities.convertDpToPixel(110));
         objectAnimatorImageView = ObjectAnimator.ofFloat(circularProfilePictureImageView, View.ALPHA, 0, 1);
         objectAnimatorTextViewReverse = ObjectAnimator.ofFloat(fragmentUserNameTextView, "translationY", 0f);
         objectAnimatorImageViewReverse = ObjectAnimator.ofFloat(circularProfilePictureImageView, View.ALPHA, 1, 0);
@@ -95,8 +111,6 @@ public class UserProfileActivity extends Activity {
         objectAnimatorImageView.setDuration(1000);
         objectAnimatorTextViewReverse.setDuration(100);
         objectAnimatorImageViewReverse.setDuration(1000);
-
-
 
         //Click listener for star button
         likeButton.setOnLikeListener(new OnLikeListener() {
@@ -115,22 +129,37 @@ public class UserProfileActivity extends Activity {
         //Bottom sheet behaviour
         View bottomSheet = coordinatorLayout.findViewById(R.id.fragmentContainerLinearLayout);
         final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
-        behavior.setPeekHeight(200);
+
+        behavior.setPeekHeight(displayUtilities.convertDpToPixel(PEAK_HEIGHT));
         behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 // React to state change
 
+                //STATE EXPANDED
                 if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+
+                    //TODO: Make sure if you want enable this in onStop
+                    likeButton.setClickable(false);
+                    likeButton.setEnabled(false);
+
                     objectAnimatorTextView.start();
                     circularProfilePictureImageView.setVisibility(View.VISIBLE);
                     objectAnimatorImageView.start();
+
                 }
 
+                //STATE COLLAPSED
                 if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+
+                    //TODO: Make sure if you want enable this in onStop
+                    likeButton.setClickable(true);
+                    likeButton.setEnabled(true);
+
                     objectAnimatorImageViewReverse.start();
                     circularProfilePictureImageView.setVisibility(View.GONE);
                     objectAnimatorTextViewReverse.start();
+                    Log.d(TAG, "onStateChanged: STATE_COLLAPSED " + displayUtilities.convertDpToPixel(behavior.getPeekHeight()));
                 }
 
             }
