@@ -3,8 +3,9 @@ package app.profile.sweeky.com.sweeky;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Toast;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -14,7 +15,18 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Arrays;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class AuthenticationActivity extends AppCompatActivity {
+
+
+    //Views
+    private TextView titleTextView;
+    private CircleImageView profilePictureImageView;
+    private EditText userNameEditText;
+    private EditText userStatusEditText;
+    private Button startButton;
+
 
     private int RC_SIGN_IN = 1;
 
@@ -24,6 +36,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
 
+        //[AUTH UI START]
         // Choose authentication providers
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.PhoneBuilder().build());
@@ -37,6 +50,14 @@ public class AuthenticationActivity extends AppCompatActivity {
                         .setLogo(R.drawable.ic_launcher)
                         .build(),
                 RC_SIGN_IN);
+
+        //[AUTH UI END]
+
+        //Initializing views
+        titleTextView = findViewById(R.id.titleTextView);
+        profilePictureImageView = findViewById(R.id.profilePictureImageView);
+        userNameEditText = findViewById(R.id.userNameEditText);
+        userStatusEditText = findViewById(R.id.userStatusEditText);
 
     }
 
@@ -60,10 +81,6 @@ public class AuthenticationActivity extends AppCompatActivity {
                 // ...
             }
         }
-    }
-
-    public void onClick(View view) {
-        Toast.makeText(this, "Hello", Toast.LENGTH_SHORT).show();
     }
 
 
