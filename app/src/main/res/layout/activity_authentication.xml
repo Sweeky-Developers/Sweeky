@@ -4,65 +4,92 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AuthenticationActivity">
+    tools:context=".AuthenticationActivity"
+    android:layout_margin="10dp">
 
-
-    <TextView
-        android:id="@+id/titleTextView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/userDetailsLoadingProgressBar"
-        android:layout_marginStart="131dp"
-        android:text="DETAILS" />
+        android:orientation="vertical"
+        android:layout_margin="15dp">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profilePictureImageView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_above="@+id/userNameEditText"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="112dp" />
 
-    <EditText
-        android:id="@+id/userNameEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/userStatusEditText"
-        android:layout_alignStart="@+id/userStatusEditText"
-        android:layout_marginBottom="-211dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_launcher"
+            android:layout_gravity="center_horizontal"/>
 
-    <EditText
-        android:id="@+id/userStatusEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="211dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="5dp">
 
-    <Button
-        android:id="@+id/startButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="186dp"
-        android:text="START" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profilePictureImageView"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_margin="10dp"
+                android:layout_gravity="center_horizontal" />
 
-    <ProgressBar
-        android:id="@+id/userDetailsLoadingProgressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="35dp"
-        android:layout_toEndOf="@+id/userNameEditText" />
+            <EditText
+                android:id="@+id/userNameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="text"
+                android:hint="Josh"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#000"
+                android:layout_margin="5dp"/>
+
+            <EditText
+                android:id="@+id/userStatusEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="text"
+                android:textColor="#000"
+                android:hint="Public figure"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp"/>
+
+        </LinearLayout>
+
+
+
+        <Button
+            android:id="@+id/startButton"
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="15dp"
+            android:text="login"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:background="#ff0000"
+            android:elevation="10dp"
+            android:layout_gravity="center_horizontal"/>
+
+        <ProgressBar
+            android:id="@+id/userDetailsLoadingProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </RelativeLayout>
