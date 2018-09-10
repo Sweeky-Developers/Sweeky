@@ -1,61 +1,50 @@
 package app.profile.sweeky.com.sweeky;
 
-import android.app.ActivityOptions;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Explode;
-import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.squareup.picasso.Picasso;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import app.profile.sweeky.com.sweeky.Const.App;
-import app.profile.sweeky.com.sweeky.Data.Profiles;
-import app.profile.sweeky.com.sweeky.Data.UserDetails;
-import app.profile.sweeky.com.sweeky.Util.DisplayUtilities;
+import app.profile.sweeky.com.sweeky.Fragments.DiscoverFragment;
+import app.profile.sweeky.com.sweeky.Fragments.PhotoFragment;
+import app.profile.sweeky.com.sweeky.Fragments.MyProfileFragment;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /*
-* Welcome to Sweeky Profile App Project
-*
-* Propose of this app is allowing users to create their
-* photo collections as a profile
-*
-*/
+ * Welcome to Sweeky Profile App Project
+ *
+ * Purpose of this app is allowing users to create their
+ * photo collections as a profile
+ *
+ */
 
 public class MainActivity extends AppCompatActivity {
 
-    //Views
-    private RecyclerView userProfileListRecyclerView;
+    private TextView userNameTextView;
+    private RecyclerView userPhotosRecyclerView;
+    private FrameLayout frameLayout;
+    private CircleImageView circularProfilePictureImageView;
 
-    //Variables
-    private String userId;
-    private static final String TAG = "MainActivity";
-    private static String LOG_TAG = "TAG";
-    private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
-    private static int RECYCLERVIEW_GRID_VIEW_SIZE = 0;
+    //Variable
+    private String uid;
 
-    //Display utility class
-    private DisplayUtilities utilities;
+    //Firebase reference
+    private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
-    //Firebase
-    private DatabaseReference databaseReference;
-
-    //Data
-    private UserDetails userDetails;
-
+    //Fragment
+    private FragmentPagerAdapter pagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,100 +57,94 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
 
-        //Getting user id from previous fragment
-        userDetails = (UserDetails) getIntent().getSerializableExtra(App.INTENT_USER_DETAILS);
+        //Initializing views
+        userNameTextView = findViewById(R.id.layoutUserNameTextView);
+        userPhotosRecyclerView = findViewById(R.id.userPhotosRecyclerView);
+        circularProfilePictureImageView = findViewById(R.id.circularProfilePictureImageView);
 
-        Log.d(TAG, "onCreate: " + userDetails);
+        //Getting user id
+        uid = FirebaseAuth.getInstance().getUid();
 
-        //Checking display width and deciding number of columns to show in RecyclerView
-        utilities = new DisplayUtilities();
+        //Tabs
+        ViewPager myViewPager = findViewById(R.id.mainViewPager);
+        pagerAdapter = new myPagerAdapter(getSupportFragmentManager());
 
-        RECYCLERVIEW_GRID_VIEW_SIZE = utilities.recyclerViewColumnWidthDecider();
-        NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = utilities.recalculateRecyclerViewSize(utilities.getDisplayWidth());
+        myViewPager.setAdapter(pagerAdapter);
+
+        //Tab Position
+        myViewPager.setCurrentItem(1);
 
 
-        //Initialization of views
-        userProfileListRecyclerView = findViewById(R.id.userProfileListRecyclerView);
+    }
 
-        //Initializing Firebase
-        databaseReference = FirebaseDatabase.getInstance().getReference();
+    //For Sweepable Fragments
+    public static class myPagerAdapter extends FragmentPagerAdapter {
+        public myPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
 
-        //Setting RecyclerView properties
-        userProfileListRecyclerView.setHasFixedSize(true);
-        userProfileListRecyclerView.setLayoutManager(new GridLayoutManager(
-                this, NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW));
+        @Override
+        public Fragment getItem(int i) {
 
+            switch (i)
+            {
+                case 0:
+                    return DiscoverFragment.newInstance();
+                case 1:
+                    return PhotoFragment.newInstance();
+                case 2:
+                    return MyProfileFragment.newInstance();
+            }
+
+            return null;
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        //Getting child list of the firebase reference
-        Query query = databaseReference.child("Profiles");
 
-        //Creating Adapter
-        FirebaseRecyclerAdapter<Profiles, MainActivity.ViewHolder> adapter;
-        adapter = new FirebaseRecyclerAdapter<Profiles, ViewHolder>(
-                Profiles.class,
-                R.layout.layout_profile_view,
-                ViewHolder.class,
-                query
-        ) {
-            @Override
-            protected void populateViewHolder(ViewHolder viewHolder, final Profiles model, final int position) {
-                viewHolder.frameLayout.setLayoutParams(
-                        new FrameLayout.LayoutParams(RECYCLERVIEW_GRID_VIEW_SIZE, RECYCLERVIEW_GRID_VIEW_SIZE));
-                viewHolder.userNameTextView.setText(model.getUserName());
-                Picasso.get().load(model.getPhotoUrl()).into(viewHolder.profileImageView);
+//        firestore.collection("Users")
+//                .document(uid)
+//                .collection("Data")
+//                .document("user_photos")
+//                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+////                        String photoUrl = documentSnapshot.getString("profile_photo");
+////
+////                        Picasso.get().load(photoUrl).into(circularProfilePictureImageView);
+//                    }
+//                }).addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//
+//                    }
+//                });
 
-                //Setting onClickListner for each views
-                viewHolder.frameLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        /*Activity Transition Animation
-                        * Only Lollipop and above versions support
-                        * activity transition animation. So we need to check
-                        * the version of device before using animation*/
-
-                        Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
-                        intent.putExtra("userName", model.getUserName());
-                        intent.putExtra("photoUrl", model.getPhotoUrl());
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            startActivity(intent, ActivityOptions
-                                    .makeSceneTransitionAnimation(MainActivity.this).toBundle());
-                        } else {
-                            //If older version, use normal activity transition
-                            startActivity(intent);
-                        }
-
-                    }
-                });
-            }
-
-        };
-
-        //Setting the adapter to RecyclerView
-        userProfileListRecyclerView.setAdapter(adapter);
+//        DocumentReference documentReference = firestore
+//                .collection("Users")
+//                .document(uid)
+//                .collection("Data")
+//                .document("user_photos");
+//
+//        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//            @Override
+//            public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                String value = documentSnapshot.getString("thump");
+//
+//                Toast.makeText(MainActivity.this, "Done", Toast.LENGTH_SHORT).show();
+//                Log.d("log", value);
+//
+////                Picasso.get().load(value).into(circularProfilePictureImageView);
+//            }
+//        });
 
     }
-
-    //ViewHolder class for firebase RecyclerView adapter
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        FrameLayout frameLayout;
-        TextView userNameTextView;
-        ImageView profileImageView;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            frameLayout = itemView.findViewById(R.id.frameLayout);
-            userNameTextView = itemView.findViewById(R.id.layoutUserNameTextView);
-            profileImageView = itemView.findViewById(R.id.profileImageView);
-        }
-    }
-
 }

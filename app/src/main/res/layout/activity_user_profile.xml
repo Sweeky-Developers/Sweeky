@@ -76,7 +76,7 @@
 
         <fragment
             android:id="@+id/fragment"
-            android:name="app.profile.sweeky.com.sweeky.Fragments.UserProfileGalleryFragment"
+            android:name="app.profile.sweeky.com.sweeky.Fragments.OthersProfileFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

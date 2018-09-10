@@ -13,11 +13,15 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -121,7 +125,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         public void onClick(View v) {
             intent = new Intent(AuthenticationActivity.this, MainActivity.class);
             Map<String, String> data = new HashMap<>();
-            Map<String, String> phtot = new HashMap<String, String>();
+            Map<String, String> photo = new HashMap<String, String>();
             UserDetails userDetails = new UserDetails();
 
             userDetails.setPhoto(photoUrl);
@@ -135,27 +139,45 @@ public class AuthenticationActivity extends AppCompatActivity {
             data.put("user_status", userStatusEditText.getText().toString());
             data.put("user_id", user);
 
-            phtot.put("thump", photoUrl);
-            phtot.put("profile_picture", photoUrl);
+            photo.put("thump", photoUrl);
+            photo.put("profile_picture", photoUrl);
 
             Map<String, Object> user_details = new HashMap<String, Object>();
 
-            user_details.put("/Data/user_details/", data);
-            user_details.put("/Data/user_details/", phtot);
+            user_details.put("/Data/user_details", data);
+            user_details.put("/Data/user_photos", photo);
 
-            firestore.collection("Users")
-                    .document(user).set(user_details)
-                    .addOnSuccessListener(new OnSuccessListener() {
-                        @Override
-                        public void onSuccess(Object o) {
-                            startActivity(intent);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
+            //User details reference for batch writing
+            DocumentReference details_reference = firestore
+                    .collection("Users")
+                    .document(user)
+                    .collection("Data")
+                    .document("user_details");
+
+            //User profile photo reference for batch writing
+            DocumentReference photo_reference = firestore
+                    .collection("Users")
+                    .document(user)
+                    .collection("Data")
+                    .document("user_photos");
+
+            //Creating batch
+            WriteBatch batch = firestore.batch();
+
+            batch.set(details_reference, data);
+            batch.set(photo_reference, photo);
+
+            batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(AuthenticationActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                public void onSuccess(Void aVoid) {
+                    //Batch written successfully
+                    Toast.makeText(AuthenticationActivity.this, "Done", Toast.LENGTH_SHORT).show();
+                    startActivity(intent);
                 }
             });
+
+
+
 
         }
     };

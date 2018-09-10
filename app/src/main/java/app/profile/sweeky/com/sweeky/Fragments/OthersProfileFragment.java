@@ -25,7 +25,7 @@ import app.profile.sweeky.com.sweeky.R;
 import app.profile.sweeky.com.sweeky.Util.DisplayUtilities;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class UserProfileGalleryFragment extends Fragment {
+public class OthersProfileFragment extends Fragment {
 
     //Views
     private TextView userNameTextView;
@@ -95,15 +95,15 @@ public class UserProfileGalleryFragment extends Fragment {
         Log.d(LOG_TAG, "Query is: " + query);
 
         //Creating Adapter
-        FirebaseRecyclerAdapter<Profiles, UserProfileGalleryFragment.ViewHolder> adapter;
-        adapter = new FirebaseRecyclerAdapter<Profiles, UserProfileGalleryFragment.ViewHolder>(
+        FirebaseRecyclerAdapter<Profiles, OthersProfileFragment.ViewHolder> adapter;
+        adapter = new FirebaseRecyclerAdapter<Profiles, OthersProfileFragment.ViewHolder>(
                 Profiles.class,
                 R.layout.layout_profile_view,
-                UserProfileGalleryFragment.ViewHolder.class,
+                OthersProfileFragment.ViewHolder.class,
                 query
         ) {
             @Override
-            protected void populateViewHolder(UserProfileGalleryFragment.ViewHolder viewHolder, Profiles model, int position) {
+            protected void populateViewHolder(OthersProfileFragment.ViewHolder viewHolder, Profiles model, int position) {
                 viewHolder.frameLayout.setLayoutParams(
                         new FrameLayout.LayoutParams(RECYCLERVIEW_GRID_VIEW_SIZE, RECYCLERVIEW_GRID_VIEW_SIZE));
                 Picasso.get().load(model.getPhotoUrl()).into(viewHolder.photosImageViewVH);
