@@ -4,26 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
-    android:orientation="vertical"
-    tools:context=".UserProfileGalleryActivity">
+    android:background="@color/white"
+    android:orientation="vertical">
 
     <FrameLayout
         android:id="@+id/containerFrameLayout"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:background="#4a21b4"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
         android:orientation="horizontal">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/circularProfilePictureImageView"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="20dp"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/ic_launcher" />
-
 
         <TextView
             android:id="@+id/layoutUserNameTextView"
@@ -31,11 +20,48 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:gravity="center"
-            android:text="User Name"
-            android:textColor="#f2f2f2"
+            android:text="@string/userName"
+            android:textColor="#000"
             android:textSize="24sp"
             android:textStyle="bold" />
+
     </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circularProfilePictureImageView"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/ic_launcher"
+            android:background="@drawable/red_border"
+            android:padding="5dp"/>
+        <TextView
+            android:id="@+id/userRank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/userRank"
+            android:layout_gravity="center"
+            android:textColor="#000"
+            android:textSize="25sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sweeks"
+            android:textStyle="bold"
+            android:textSize="30sp"
+            android:textColor="@color/red"
+            android:layout_gravity="center"/>
+
+
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/userPhotosRecyclerView"

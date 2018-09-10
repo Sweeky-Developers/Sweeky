@@ -1,6 +1,5 @@
 package app.profile.sweeky.com.sweeky;
 
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -9,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.transition.Fade;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
@@ -26,7 +24,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class UserProfileActivity extends Activity {
 
     //Views
-    private ImageView profilePhotoImageView;
+    private ImageView profilePhotoImageView,galleryOpenIcon;
     private ImageView starImageView;
     private TextView fragmentUserNameTextView;
     private LikeButton likeButton;
@@ -39,16 +37,10 @@ public class UserProfileActivity extends Activity {
     private static String LOG_TAG = "TAG";
     private String userName;
     private String photoUrl;
-    private int PEAK_HEIGHT = 62;
+    private int PEAK_HEIGHT = 50;
 
     //MediaPlayer
     private MediaPlayer mediaPlayer;
-
-    //Object Animator
-    ObjectAnimator objectAnimatorTextView;
-    ObjectAnimator objectAnimatorTextViewReverse;
-    ObjectAnimator objectAnimatorImageView;
-    ObjectAnimator objectAnimatorImageViewReverse;
 
     //Bundle
     private Bundle recievData;
@@ -82,6 +74,7 @@ public class UserProfileActivity extends Activity {
         frameLayout = findViewById(R.id.containerFrameLayout);
         profileContainerCordinatorLayout = findViewById(R.id.profileContainerCordinatorLayout);
 
+
         //Getting shared values
         recievData = getIntent().getExtras();
         userName = recievData.getString("userName");
@@ -100,17 +93,6 @@ public class UserProfileActivity extends Activity {
 
         //Initializing Display utility
         displayUtilities = new DisplayUtilities();
-
-        //Initializing object animators
-        objectAnimatorTextView = ObjectAnimator.ofFloat(fragmentUserNameTextView, "translationY", displayUtilities.convertDpToPixel(110));
-        objectAnimatorImageView = ObjectAnimator.ofFloat(circularProfilePictureImageView, View.ALPHA, 0, 1);
-        objectAnimatorTextViewReverse = ObjectAnimator.ofFloat(fragmentUserNameTextView, "translationY", 0f);
-        objectAnimatorImageViewReverse = ObjectAnimator.ofFloat(circularProfilePictureImageView, View.ALPHA, 1, 0);
-
-        objectAnimatorTextView.setDuration(200);
-        objectAnimatorImageView.setDuration(1000);
-        objectAnimatorTextViewReverse.setDuration(100);
-        objectAnimatorImageViewReverse.setDuration(1000);
 
         //Click listener for star button
         likeButton.setOnLikeListener(new OnLikeListener() {
@@ -143,10 +125,6 @@ public class UserProfileActivity extends Activity {
                     likeButton.setClickable(false);
                     likeButton.setEnabled(false);
 
-                    objectAnimatorTextView.start();
-                    circularProfilePictureImageView.setVisibility(View.VISIBLE);
-                    objectAnimatorImageView.start();
-
                 }
 
                 //STATE COLLAPSED
@@ -155,11 +133,6 @@ public class UserProfileActivity extends Activity {
                     //TODO: Make sure if you want enable this in onStop
                     likeButton.setClickable(true);
                     likeButton.setEnabled(true);
-
-                    objectAnimatorImageViewReverse.start();
-                    circularProfilePictureImageView.setVisibility(View.GONE);
-                    objectAnimatorTextViewReverse.start();
-                    Log.d(TAG, "onStateChanged: STATE_COLLAPSED " + displayUtilities.convertDpToPixel(behavior.getPeekHeight()));
                 }
 
             }

@@ -71,7 +71,7 @@ public class UserProfileGalleryFragment extends Fragment {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         //Setting circularProfilePictureImageView property
-        circularProfilePictureImageView.setVisibility(View.GONE);
+        //circularProfilePictureImageView.setVisibility(View.GONE);
 
         //Setting RecyclerView properties
         userPhotosRecyclerView.setHasFixedSize(true);
@@ -121,13 +121,16 @@ public class UserProfileGalleryFragment extends Fragment {
         FrameLayout frameLayout;
         ImageView photosImageViewVH;
         TextView userNameTextViewVH;
+        ImageView openGalleryIconVH;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             photosImageViewVH = itemView.findViewById(R.id.profileImageView);
             userNameTextViewVH = itemView.findViewById(R.id.layoutUserNameTextView);
             frameLayout = itemView.findViewById(R.id.frameLayout);
-            userNameTextViewVH.setVisibility(View.GONE);
+            //openGalleryIconVH = itemView.findViewById(R.id.openGallery_icon);
+            //userNameTextViewVH.setVisibility(View.GONE);
+            //openGalleryIconVH.setVisibility(View.GONE);
         }
     }
 

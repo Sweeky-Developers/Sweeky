@@ -32,7 +32,6 @@ public class AuthenticationActivity extends AppCompatActivity {
 
 
     //Views
-    private TextView titleTextView;
     private CircleImageView profilePictureImageView;
     private EditText userNameEditText;
     private EditText userStatusEditText;
@@ -81,7 +80,6 @@ public class AuthenticationActivity extends AppCompatActivity {
 
 
         //Initializing views
-        titleTextView = findViewById(R.id.titleTextView);
         profilePictureImageView = findViewById(R.id.profilePictureImageView);
         userNameEditText = findViewById(R.id.userNameEditText);
         userStatusEditText = findViewById(R.id.userStatusEditText);

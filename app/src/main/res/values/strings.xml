@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Sweeky</string>
+    <string name="sweeks">Sweeks</string>
+
+    <string name="userRank">Rank</string>
+    <string name="userName">Sweeky</string>
 </resources>
