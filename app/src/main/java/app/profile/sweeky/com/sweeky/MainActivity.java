@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Explode;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
@@ -21,7 +22,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
+import app.profile.sweeky.com.sweeky.Const.App;
 import app.profile.sweeky.com.sweeky.Data.Profiles;
+import app.profile.sweeky.com.sweeky.Data.UserDetails;
 import app.profile.sweeky.com.sweeky.Util.DisplayUtilities;
 
 /*
@@ -38,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView userProfileListRecyclerView;
 
     //Variables
+    private String userId;
+    private static final String TAG = "MainActivity";
     private static String LOG_TAG = "TAG";
     private static int NUMBER_OF_COLUMNS_FOR_RECYCLER_VIEW = 3;
     private static int RECYCLERVIEW_GRID_VIEW_SIZE = 0;
@@ -47,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
 
     //Firebase
     private DatabaseReference databaseReference;
+
+    //Data
+    private UserDetails userDetails;
 
 
     @Override
@@ -60,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
 
+        //Getting user id from previous fragment
+        userDetails = (UserDetails) getIntent().getSerializableExtra(App.INTENT_USER_DETAILS);
+
+        Log.d(TAG, "onCreate: " + userDetails);
 
         //Checking display width and deciding number of columns to show in RecyclerView
         utilities = new DisplayUtilities();
