@@ -26,7 +26,7 @@ import app.profile.sweeky.com.sweeky.Util.DisplayUtilities;
 
 /*
 * Welcome to Sweeky Profile App Project
-*
+* This is the a new line added for testing
 * Propose of this app is allowing users to create their
 * photo collections as a profile
 *
